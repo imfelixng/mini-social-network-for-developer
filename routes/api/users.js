@@ -20,7 +20,6 @@ router.get('/test', (req, res, next) => {
 router.post('/register', async (req, res, next) => {
     
     let checkUser = null;
-    
     try {
         checkUser = await User.findOne({email: req.body.email});
     } catch (error) {
@@ -64,6 +63,42 @@ router.post('/register', async (req, res, next) => {
             });
         });
     }
+});
+
+//@route    GET api/users/login
+//@desc     Login user / Returning JWT token
+//@access   Public
+router.post('/login', async (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    // Find user by email
+    let user = null;
+    try {
+        user = await User.findOne({email});
+    } catch (error) {
+        console.log(error);
+    }
+
+    //check user
+    if(!user) {
+        return res.status(404).json({
+            email: "User not found"
+        });
+    }
+
+    //check password
+    bcrypt.compare(password, user.password)
+    .then((isMatch) => {
+        if(isMatch) {
+            res.json({
+                msg: 'Login success'
+            })
+        } else {
+            return res.status(401).json({
+                password: 'Password incorrect'
+            })
+        }
+    })
 });
 
 module.exports = router;
