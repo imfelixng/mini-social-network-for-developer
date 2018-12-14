@@ -1,6 +1,7 @@
 const express  = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 
 const app = express();
 
@@ -24,6 +25,12 @@ mongoose.connect(db, {
 .catch(err => console.log(err));
 
 mongoose.set('useCreateIndex', true);
+
+//Passport middleware
+app.use(passport.initialize());
+
+//  Passport config
+require('./configs/passport')(passport);
 
 app.get('/', (req, res, next) => {
     res.status(200).json({

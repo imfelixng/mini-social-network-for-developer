@@ -3,9 +3,13 @@ const router  =express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+
 const key = require('../../configs/key');
+
 //Load User Model
 const User = require('../../models/user');
+
 //@route    GET api/users/test
 //@desc     Test user route
 //@access   Public
@@ -93,18 +97,18 @@ router.post('/login', async (req, res, next) => {
         if(isMatch) {
             //User Matched
 
-            //Create JWT payload
+            //Create JWT Payload
             const payload = {
                 id: user.id,
                 name: user.name,
                 avatar: user.avatar
             }
 
-            //sign token
+            //Sign Token
             jwt.sign(
                 payload, 
                 key.secretOrKey, 
-                { expiresIn: 3600 },
+                { expiresIn: 60 },
                 (err, token) => {
                     if(err) throw err;
                     res.status(200).json({
@@ -120,6 +124,17 @@ router.post('/login', async (req, res, next) => {
             })
         }
     })
+});
+
+//@route    GET api/users/current
+//@desc     Return current user
+//@access   Private
+router.get('/current', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+    return res.status(200).json({
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email
+    });
 });
 
 module.exports = router;
