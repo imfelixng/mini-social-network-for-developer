@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
+//Load Input Validation
+const validateRegisterInput = require('../../validation/register');
+const validateLoginInput = require('../../validation/login');
+
+//Load key
 const key = require('../../configs/key');
 
 //Load User Model
@@ -24,6 +29,13 @@ router.get('/test', (req, res, next) => {
 //@access   Public
 router.post('/register', async (req, res, next) => {
     
+    const {errors, isValid} = validateRegisterInput(req.body);
+
+    //check validation
+    if(!isValid) {
+        return res.status(400).json(errors)
+    }
+
     let checkUser = null;
     try {
         checkUser = await User.findOne({email: req.body.email});
@@ -32,9 +44,8 @@ router.post('/register', async (req, res, next) => {
     }
 
     if(checkUser) {
-        return res.status(400).json({
-            email: 'Email already exists'
-        });
+        errors.email = 'Email already exists';
+        return res.status(400).json(errors);
     } else {
         const avatar = gravatar.url(req.body.email, {
             s: '200',
@@ -74,6 +85,13 @@ router.post('/register', async (req, res, next) => {
 //@desc     Login user / Returning JWT token
 //@access   Public
 router.post('/login', async (req, res, next) => {
+
+    const {errors, isValid} = validateLoginInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
     const email = req.body.email;
     const password = req.body.password;
     // Find user by email
@@ -86,9 +104,8 @@ router.post('/login', async (req, res, next) => {
 
     //check user
     if(!user) {
-        return res.status(404).json({
-            email: "User not found"
-        });
+        errors.email = "User not found"
+        return res.status(404).json(errors);
     }
 
     //check password
@@ -119,9 +136,8 @@ router.post('/login', async (req, res, next) => {
             );
 
         } else {
-            return res.status(401).json({
-                password: 'Password incorrect'
-            })
+            errors.password = 'Password incorrect';
+            return res.status(401).json(errors);
         }
     })
 });
