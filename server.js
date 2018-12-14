@@ -23,6 +23,8 @@ mongoose.connect(db, {
 })
 .catch(err => console.log(err));
 
+mongoose.set('useCreateIndex', true);
+
 app.get('/', (req, res, next) => {
     res.status(200).json({
         message: 'Welcome to my website'
