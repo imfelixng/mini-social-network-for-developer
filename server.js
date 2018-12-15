@@ -43,6 +43,20 @@ app.use('/api/users', users);
 app.use('/api/profile', profile);
 app.use('/api/posts', posts);
 
+const createLog = (req, res, next) => {
+    let error  = new Error("Not found");
+    error.status = 404;
+    next(error);
+}
+
+app.use(createLog);
+
+const handleLog = (error, req, res, next) => {
+    return res.status(error.status || 500).json({message: error.message});
+}
+
+app.use(handleLog);
+
 const port = process.env.PORT | 5000;
 
 app.listen(port, () => {
