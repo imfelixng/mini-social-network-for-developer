@@ -341,4 +341,129 @@ router.post('/education', passport.authenticate('jwt', {session: false}), async 
 
 });
 
+//@route    DELETE api/profile/experience/:exp_id
+//@desc     Delete experience from profile
+//@access   Private
+router.delete('/experience/:exp_id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    let errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    let removedIndex = profile.experience.map((experience) => {
+        return experience.id;
+    }).indexOf(req.params.exp_id);
+
+    if(removedIndex === -1) {
+        errors.noeducation = "This experience not found";
+        return res.status(404).json(errors);
+    }
+
+
+    //update deleted experience to exp array
+    profile.experience.splice(removedIndex, 1);
+
+    let updatedProfile = null;
+
+    try {
+        updatedProfile = await profile.save();
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(updatedProfile) {
+        return res.status(200).json(updatedProfile);
+    }
+
+});
+
+//@route    DELETE api/profile/education/:edu_id
+//@desc     Delete education from profile
+//@access   Private
+router.delete('/education/:edu_id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    let errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    let removedIndex = profile.education.map((education) => {
+        return education.id;
+    }).indexOf(req.params.edu_id);
+
+    if(removedIndex === -1) {
+        errors.noeducation = "This education not found";
+        return res.status(404).json(errors);
+    }
+
+
+    //update deleted education to exp array
+    profile.education.splice(removedIndex, 1);
+
+    let updatedProfile = null;
+
+    try {
+        updatedProfile = await profile.save();
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(updatedProfile) {
+        return res.status(200).json(updatedProfile);
+    }
+
+});
+
+//@route    DELETE api/profile/:pro_id
+//@desc     Delete profile
+//@access   Private
+router.delete('/', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    let errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOneAndRemove({user: req.user.id});
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    let user = null;
+
+    try {
+        user = await User.findByIdAndRemove(req.user.id);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!user) {
+        errors.nouser = "This user not found";
+        return res.status(404).json(errors);
+    }
+
+    return res.status(200).json({success: true});
+
+});
+
 module.exports = router;
