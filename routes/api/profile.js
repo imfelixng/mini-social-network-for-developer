@@ -11,6 +11,8 @@ const User = require('../../models/user');
 
 //Load validate
 const ValidateProfileInput = require('../../validation/profile');
+const ValidateExperienceInput = require('../../validation/experience');
+const ValidateEducationInput = require('../../validation/education');
 
 //@route    GET api/profile/test
 //@desc     Test profile route
@@ -235,6 +237,106 @@ router.post('/', passport.authenticate('jwt', {session: false}), async (req, res
 
 
     }
+
+
+});
+
+//@route    POST api/profile/experience
+//@desc     Add experience to profile
+//@access   Private
+router.post('/experience', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    let {errors, isValid} = ValidateExperienceInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    let newExp = {};
+    newExp.title = req.body.title;
+    newExp.company = req.body.company;
+    newExp.location = req.body.location;
+    newExp.from = req.body.from;
+    newExp.to = req.body.to;
+    newExp.current = req.body.current;
+    newExp.description = req.body.description;
+
+    //Add to exp array
+    profile.experience.unshift(newExp);
+
+    let updatedProfile = null;
+
+    try {
+        updatedProfile = await profile.save();
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(updatedProfile) {
+        return res.status(200).json(updatedProfile);
+    }
+
+});
+
+//@route    POST api/profile/education
+//@desc     Add education to profile
+//@access   Private
+router.post('/education', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    let {errors, isValid} = ValidateEducationInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    let newEdu = {};
+    newEdu.school = req.body.school;
+    newEdu.degree = req.body.degree;
+    newEdu.fieldofstudy = req.body.fieldofstudy;
+    newEdu.from = req.body.from;
+    newEdu.to = req.body.to;
+    newEdu.current = req.body.current;
+    newEdu.description = req.body.description;
+
+    //Add to exp array
+    profile.education.unshift(newEdu);
+
+    let updatedProfile = null;
+
+    try {
+        updatedProfile = await profile.save();
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(updatedProfile) {
+        return res.status(200).json(updatedProfile);
+    }
+
 
 
 });
