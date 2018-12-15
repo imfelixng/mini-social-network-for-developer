@@ -32,7 +32,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req, res,
 
     try {
         profile = await Profile.findOne({user: req.user.id})
-        .populate('user', ['name', 'avatar']);
+        .populate('user', 'name avatar');
     } catch (error) {
         return res.status(500).json(err);
     }
@@ -43,6 +43,74 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req, res,
     }
     return res.status(200).json(profile);
     
+});
+
+//@route    GET api/profile/all
+//@desc     Get all profile
+//@access   Public
+router.get('/all', async (req, res, next) => {
+    let errors = {};
+    let profiles = [];
+
+    try {
+        profiles = await Profile.find().populate('user', 'name avatar');
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profiles.length > 0) {
+        errors.noprofile = "There are no profiles";
+        return res.status(404).json(errors);
+    }
+    return res.status(200).json({profiles});
+
+
+});
+
+//@route    GET api/profile/user/:user_id
+//@desc     Get profile by user ID
+//@access   Public
+router.get('/user/:user_id', async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.params.user_id})
+        .populate('user', 'name avatar');
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    return res.status(200).json(profile);
+
+});
+
+//@route    GET api/profile/handle/:handle
+//@desc     Get profile by handle
+//@access   Public
+router.get('/handle/:handle', async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({handle: req.params.handle})
+        .populate('user', 'name avatar');
+    } catch (error) {
+        return res.status(500).json(error);
+    }
+
+    if(!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+    }
+
+    return res.status(200).json(profile);
+
 });
 
 //@route    POST api/profile
