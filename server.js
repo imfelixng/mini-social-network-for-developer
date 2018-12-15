@@ -25,6 +25,7 @@ mongoose.connect(db, {
 .catch(err => console.log(err));
 
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 
 //Passport middleware
 app.use(passport.initialize());

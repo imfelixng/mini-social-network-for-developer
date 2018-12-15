@@ -9,6 +9,9 @@ const Profile = require('../../models/profile');
 //Load user profile
 const User = require('../../models/user');
 
+//Load validate
+const ValidateProfileInput = require('../../validation/profile');
+
 //@route    GET api/profile/test
 //@desc     Test profile route
 //@access   Public
@@ -28,7 +31,8 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req, res,
     let profile = null;
 
     try {
-        profile = await Profile.findOne({user: req.user.id});
+        profile = await Profile.findOne({user: req.user.id})
+        .populate('user', ['name', 'avatar']);
     } catch (error) {
         return res.status(500).json(err);
     }
@@ -46,7 +50,11 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req, res,
 //@access   Private
 router.post('/', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
     
-    let errors = {};
+    const {errors, isValid} = ValidateProfileInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
 
     // Get fields
     const profileFields = {}
