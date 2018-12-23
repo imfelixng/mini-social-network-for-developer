@@ -7,6 +7,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "local_models": "file:./models",
+    "local_routes": "file:./routes",
+    "local_validations": "file:./validations",
+    "local_configs": "file:./configs",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",

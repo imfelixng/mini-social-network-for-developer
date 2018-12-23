@@ -384,6 +384,18 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
+"local_configs@file:./configs":
+  version "0.0.0"
+
+"local_models@file:./models":
+  version "0.0.0"
+
+"local_routes@file:./routes":
+  version "0.0.0"
+
+"local_validations@file:./validations":
+  version "0.0.0"
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"

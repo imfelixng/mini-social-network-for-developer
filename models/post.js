@@ -27,7 +27,8 @@ const PostSchema = new Schema({
     comments: [
         {
             user: {
-                type: Schema.Types.ObjectId
+                type: Schema.Types.ObjectId,
+                ref: 'users'
             },
             text: {
                 type: String,
@@ -47,4 +48,4 @@ const PostSchema = new Schema({
     ]
 });
 
-module.exports = post = mongoose.model.model('posts', PostSchema);
+module.exports = post = mongoose.model('posts', PostSchema);
