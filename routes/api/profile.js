@@ -431,7 +431,7 @@ router.delete('/education/:edu_id', passport.authenticate('jwt', {session: false
 
 });
 
-//@route    DELETE api/profile/:pro_id
+//@route    DELETE api/profile
 //@desc     Delete profile
 //@access   Private
 router.delete('/', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
