@@ -4,15 +4,15 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 //Load profile Model
-const Profile = require('local_models/profile');
+const Profile = require('@local_models/profile');
 
 //Load user profile
-const User = require('local_models/user');
+const User = require('@local_models/user');
 
 //Load validate
-const ValidateProfileInput = require('local_validations/profile');
-const ValidateExperienceInput = require('local_validations/experience');
-const ValidateEducationInput = require('local_validations/education');
+const ValidateProfileInput = require('@local_validations/profile');
+const ValidateExperienceInput = require('@local_validations/experience');
+const ValidateEducationInput = require('@local_validations/education');
 
 //@route    GET api/profile/test
 //@desc     Test profile route
@@ -36,7 +36,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req, res,
         profile = await Profile.findOne({user: req.user.id})
         .populate('user', 'name avatar');
     } catch (error) {
-        return res.status(500).json(err);
+        return res.status(500).json(error);
     }
     
     if(!profile) {

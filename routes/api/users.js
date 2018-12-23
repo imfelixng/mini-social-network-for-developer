@@ -6,14 +6,14 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 //Load Input Validation
-const validateRegisterInput = require('local_validations/register');
-const validateLoginInput = require('local_validations/login');
+const validateRegisterInput = require('@local_validations/register');
+const validateLoginInput = require('@local_validations/login');
 
 //Load key
-const key = require('local_configs/key');
+const key = require('@local_configs/key');
 
 //Load User Model
-const User = require('local_models/user');
+const User = require('@local_models/user');
 
 //@route    GET api/users/test
 //@desc     Test user route

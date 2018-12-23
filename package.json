@@ -4,18 +4,21 @@
   "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js"
+    "start": "yarn install && node server.js"
+  },
+  "_moduleAliases": {
+    "@local_configs": "./configs",
+    "@local_models": "./models",
+    "@local_routes": "./routes",
+    "@local_validations": "./validations"
   },
   "dependencies": {
-    "local_models": "file:./models",
-    "local_routes": "file:./routes",
-    "local_validations": "file:./validations",
-    "local_configs": "file:./configs",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "gravatar": "^1.8.0",
     "jsonwebtoken": "^8.4.0",
+    "module-alias": "^2.1.0",
     "mongoose": "^5.3.15",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
