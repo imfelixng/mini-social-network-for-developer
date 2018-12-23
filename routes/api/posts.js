@@ -26,31 +26,33 @@ router.post('/', passport.authenticate('jwt', {session: false}), async (req, res
     const {errors, isValid} = ValidatePostInput(req.body);
 
     if(!isValid) {
+        console.log(isValid);
         return res.status(400).json({
             errors
         });
     }
 
-    const newPost = {
+    const newPost = new Post({
         text: req.body.text,
         name: req.body.name,
         avatar: req.body.avatar,
         user: req.user.id
-    }
+    });
 
-    const post = null;
+    let post = null;
 
     try {
         post = await newPost.save();
     } catch (error) {
-        return res.status(500).json({
-            error
-        })
+        errors.err = error.message;
+        return res.status(500).json(errors);
     }
 
     if(!post) {
-
+        
     }
+
+    return res.status(200).json(post);
 
 
 });
