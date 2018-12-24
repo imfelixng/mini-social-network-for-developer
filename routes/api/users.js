@@ -2,7 +2,11 @@ import express from 'express';
 const router  =express.Router();
 import passport from 'passport';
 
-import {register, login, currentUser} from '@local_controllers/users';
+import {
+    register, 
+    login, 
+    currentUser
+} from '@local_controllers/users';
 
 //@route    GET api/users/register
 //@desc     Register user
