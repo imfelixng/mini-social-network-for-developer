@@ -222,7 +222,7 @@ router.post('/like/:id', passport.authenticate('jwt', {session: false}), async (
 });
 
 //@route    POST api/posts/unlike/:id
-//@desc     unLike post
+//@desc     Unlike post
 //@access   Private
 router.post('/unlike/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
     const errors = {};
@@ -263,6 +263,127 @@ router.post('/unlike/:id', passport.authenticate('jwt', {session: false}), async
 
     let postUpdated = null;
 
+    try {
+        postUpdated = await post.save();
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!postUpdated) {
+        errors.nounlike = "That post isn't uniked";
+        return res.status(500).json(errors);
+    }
+
+    return res.status(200).json({success: true, postUpdated});
+
+});
+
+//@route    POST api/posts/comment/:id
+//@desc     Add comment to post
+//@access   Private
+router.post('/comment/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    const {errors, isValid} = ValidatePostInput(req.body);
+
+    if(!isValid) {
+        return res.status(400).json({
+            errors
+        });
+    }
+    
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!profile) {
+        errors.err = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    let post = null;
+
+    try {
+        post = await Post.findById(req.params.id);
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!post) {
+        errors.err = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    const newComment = {
+        text: req.body.text,
+        nmae: req.body.name,
+        avatar: req.body.avatar,
+        user: req.user.id
+    }
+
+    post.comments.unshift(newComment);
+    let  postUpdated = null;
+    try {
+        postUpdated = await post.save();
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!postUpdated) {
+        errors.nounlike = "That post isn't uniked";
+        return res.status(500).json(errors);
+    }
+
+    return res.status(200).json({success: true, postUpdated});
+
+});
+
+//@route    DELETE api/posts/comment/:id/:comment_id
+//@desc     Deleted comment from post by ID
+//@access   Private
+router.delete('/comment/:id/:comment_id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!profile) {
+        errors.err = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    let post = null;
+
+    try {
+        post = await Post.findById(req.params.id);
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!post) {
+        errors.err = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    if(post.comments.filter(comment => comment.id.toString() === req.params.comment_id).length === 0) {
+        errors.nocomment = "Not found comment for that comment ID";
+        return res.status(404).json(errors);
+    }
+
+    post.comments = post.comments.filter(comment => comment.id.toString() !== req.params.comment_id);
+    let  postUpdated = null;
     try {
         postUpdated = await post.save();
     } catch (error) {
