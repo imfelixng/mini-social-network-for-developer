@@ -1,9 +1,9 @@
-const JWTStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const mongoose = require('mongoose');
+import { Strategy as JWTStrategy} from 'passport-jwt';
+import {ExtractJwt} from 'passport-jwt';
+import mongoose from'mongoose';
 
 const User = mongoose.model('users');
-const key = require('../configs/key');
+import key from '@local_configs/key';
 
 const opts = {};
 

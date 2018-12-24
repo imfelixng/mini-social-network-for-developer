@@ -1,24 +1,24 @@
-require('module-alias/register');
-const express  = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const passport = require('passport');
+import moduleAlias from 'module-alias/register';
+import express  from 'express';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import passport from 'passport';
 
 const app = express();
 
-const users = require('./routes/api/users');
-const profile = require('./routes/api/profile');
-const posts = require('./routes/api/posts');
+import users from './routes/api/users';
+import profile from './routes/api/profile';
+import posts from './routes/api/posts';
 
 //Body parser middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //DB config
-const db = require('./configs/key').mongoURI;
+import db from './configs/key';
 
 //Connect to mongoDB
-mongoose.connect(db, {
+mongoose.connect(db.mongoURI, {
     useNewUrlParser: true,
 }).then(() => {
     console.log("MongoDB connected!");
@@ -32,7 +32,9 @@ mongoose.set('useFindAndModify', false);
 app.use(passport.initialize());
 
 //  Passport config
-require('./configs/passport')(passport);
+import Passport from './configs/passport';
+
+Passport(passport);
 
 app.get('/', (req, res, next) => {
     res.status(200).json({

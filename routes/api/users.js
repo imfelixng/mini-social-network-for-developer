@@ -1,19 +1,19 @@
-const express = require('express');
+import express from 'express';
 const router  =express.Router();
-const gravatar = require('gravatar');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const passport = require('passport');
+import passport from 'passport';
+import gravatar from 'gravatar';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 //Load Input Validation
-const validateRegisterInput = require('@local_validations/register');
-const validateLoginInput = require('@local_validations/login');
+import validateRegisterInput from '@local_validations/register';
+import validateLoginInput from '@local_validations/login';
 
 //Load key
-const key = require('@local_configs/key');
+import key from '@local_configs/key';
 
 //Load User Model
-const User = require('@local_models/user');
+import User from '@local_models/user';
 
 //@route    GET api/users/test
 //@desc     Test user route

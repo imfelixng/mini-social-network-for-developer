@@ -1,13 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router  =express.Router();
-const mongoose = require('mongoose');
-const passport = require('passport');
+import passport from 'passport';
 
 //import Post model
-const Post = require('@local_models/post');
+import Post from '@local_models/post';
 
 // import validate post
-const ValidatePostInput = require('@local_validations/post');
+import ValidatePostInput from '@local_validations/post';
 
 //@route    GET api/posts/test
 //@desc     Test post route
@@ -49,11 +48,11 @@ router.post('/', passport.authenticate('jwt', {session: false}), async (req, res
     }
 
     if(!post) {
-        
+        errors.err = "This post isn't created";
+        return res.status(500).json(errors);
     }
 
     return res.status(200).json(post);
-
 
 });
 

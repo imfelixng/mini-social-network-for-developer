@@ -1,18 +1,17 @@
-const express = require('express');
+import express from 'express';
 const router  =express.Router();
-const mongoose = require('mongoose');
-const passport = require('passport');
+import passport from 'passport';
 
 //Load profile Model
-const Profile = require('@local_models/profile');
+import Profile from '@local_models/profile';
 
 //Load user profile
-const User = require('@local_models/user');
+import User from '@local_models/user';
 
 //Load validate
-const ValidateProfileInput = require('@local_validations/profile');
-const ValidateExperienceInput = require('@local_validations/experience');
-const ValidateEducationInput = require('@local_validations/education');
+import ValidateProfileInput from '@local_validations/profile';
+import ValidateExperienceInput from '@local_validations/experience';
+import ValidateEducationInput from '@local_validations/education';
 
 //@route    GET api/profile/test
 //@desc     Test profile route
