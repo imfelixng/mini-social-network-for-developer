@@ -162,4 +162,121 @@ router.delete('/:id', passport.authenticate('jwt', {session: false}), async (req
 
 });
 
+//@route    POST api/posts/like/:id
+//@desc     Like post
+//@access   Private
+router.post('/like/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!profile) {
+        errors.err = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    let post = null;
+
+    try {
+        post = await Post.findById(req.params.id);
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!post) {
+        errors.err = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    if(post.likes.filter(like => like.user.toString() === req.user.id).length > 0) {
+        errors.alreadyliked = "That user liked post";
+        return res.status(400).json(errors)
+    }
+
+    //Like post
+    post.likes.unshift({user: req.user.id});
+
+    let postUpdated = null;
+
+    try {
+        postUpdated = await post.save();
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!postUpdated) {
+        errors.nolike = "That post isn't liked";
+        return res.status(500).json(errors);
+    }
+
+    return res.status(200).json({success: true, postUpdated});
+
+});
+
+//@route    POST api/posts/unlike/:id
+//@desc     unLike post
+//@access   Private
+router.post('/unlike/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!profile) {
+        errors.err = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    let post = null;
+
+    try {
+        post = await Post.findById(req.params.id);
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!post) {
+        errors.err = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    if(post.likes.filter(like => like.user.toString() === req.user.id).length === 0) {
+        errors.notfound = "That post isn't liked by user";
+        return res.status(404).json(errors);
+    }
+
+    post.likes = post.likes.filter(like => like.user.toString() !== req.user.id);
+
+    let postUpdated = null;
+
+    try {
+        postUpdated = await post.save();
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!postUpdated) {
+        errors.nounlike = "That post isn't uniked";
+        return res.status(500).json(errors);
+    }
+
+    return res.status(200).json({success: true, postUpdated});
+
+});
+
 export default router;
