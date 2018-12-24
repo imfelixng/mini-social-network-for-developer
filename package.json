@@ -11,6 +11,7 @@
     "@local_configs": "./configs",
     "@local_models": "./models",
     "@local_routes": "./routes",
+    "@local_controllers": "./controllers",
     "@local_validations": "./validations"
   },
   "dependencies": {
