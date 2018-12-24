@@ -465,4 +465,4 @@ router.delete('/', passport.authenticate('jwt', {session: false}), async (req, r
 
 });
 
-module.exports = router;
+export default router;

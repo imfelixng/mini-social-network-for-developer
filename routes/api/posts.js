@@ -4,6 +4,7 @@ import passport from 'passport';
 
 //import Post model
 import Post from '@local_models/post';
+import Profile from '@local_models/profile';
 
 // import validate post
 import ValidatePostInput from '@local_validations/post';
@@ -15,6 +16,54 @@ router.get('/test', (req, res, next) => {
     res.json({
         msg: 'Posts works'
     });
+});
+
+//@route    GET api/posts
+//@desc     Get posts
+//@access   Public
+router.get('/', async (req, res, next) => {
+
+    const errors = {};
+
+    let posts = null;
+
+    try {
+        
+        posts = await Post.find().sort({date: -1}).populate('user', "name avatar");
+
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(404).json(errors);
+    }
+
+    return res.status(200).json(posts);
+});
+
+//@route    GET api/posts/:id
+//@desc     Get post by id
+//@access   Public
+router.get('/:id', async (req, res, next) => {
+
+    const errors = {};
+
+    let post = null;
+
+    try {
+        
+        post = await Post.findById(req.params.id).sort({date: -1}).populate('user', "name avatar");
+
+    } catch (error) {
+        errors.nopost = "Not found post for that ID";
+        errors.err = error.message;
+        return res.status(404).json(errors);
+    }
+
+    if(!post) {
+        errors.nopost = "Not found post for that ID"
+        return res.status(404).json(errors);
+    }
+
+    return res.status(200).json(post);
 });
 
 //@route    POST api/posts
@@ -48,7 +97,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), async (req, res
     }
 
     if(!post) {
-        errors.err = "This post isn't created";
+        errors.err = "That post isn't created";
         return res.status(500).json(errors);
     }
 
@@ -56,4 +105,61 @@ router.post('/', passport.authenticate('jwt', {session: false}), async (req, res
 
 });
 
-module.exports = router;
+//@route    DELETE api/posts/:id
+//@desc     Delete post by id
+//@access   Private
+router.delete('/:id', passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+    const errors = {};
+    let profile = null;
+
+    try {
+        profile = await Profile.findOne({user: req.user.id});
+    } catch (error) {
+        errors.noprofile = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    if(!profile) {
+        errors.noprofile = "Not found profile for that user";
+        return res.status(404).json(errors);
+    }
+
+    let post = null;
+    try {
+        post = await Post.findById(req.params.id);
+    } catch (error) {
+        errors.nopost = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    if(!post) {
+        errors.nopost = "Not found post for that ID";
+        return res.status(404).json(errors);
+    }
+
+    if(post.user.toString() !== req.user.id) {
+        errors.noauthor = "User not authorized";
+        return res.status(401).json(errors);
+    }
+
+    let postDeleted = null;
+
+    try {
+        postDeleted = post.remove();    
+    } catch (error) {
+        errors.err = error.message;
+        return res.status(500).json(errors);
+    }
+
+    if(!postDeleted) {
+        errors.nodeleted = "That post is not deleted";
+        return res.status(500).json(errors);
+    }
+
+    return res.status(200).json({
+        success: true
+    });
+
+});
+
+export default router;
