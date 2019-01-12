@@ -27,7 +27,6 @@ const getPost = async (req, res) => {
   try {
     post = await Post.findById(req.params.id).sort({ date: -1 }).populate('user', 'name avatar');
   } catch (error) {
-    errors.nopost = 'Not found post for that ID';
     errors.err = error.message;
     return res.status(404).json(errors);
   }
@@ -42,8 +41,6 @@ const getPost = async (req, res) => {
 const createPost = async (req, res) => {
   const { errors, isValid } = ValidatePostInput(req.body);
   if (!isValid) {
-    // eslint-disable-next-line no-console
-    console.log(isValid);
     return res.status(400).json(errors);
   }
   const newPost = new Post({

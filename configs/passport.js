@@ -14,7 +14,7 @@ const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = key.secretOrKey;
 
-module.exports = (passport) => {
+export default (passport) => {
   passport.use(new JWTStrategy(opts, async (jwtPayload, done) => {
     let user = null;
     try {
